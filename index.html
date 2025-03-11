@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="Hugo 0.88.1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href=""https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+	<link rel="stylesheet" href="css/custom.css">
+	<link rel="stylesheet" href="css/normalize.css">
+
+	<title>Contextual Speech Extraction</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+
+<body data-new-gr-c-s-check-loaded="14.1091.0" data-gr-ext-installed="">
+
+<div class="container" >
+<header role="banner">
+</header>
+<main role="main">
+<article itemscope itemtype="https://schema.org/BlogPosting">
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<div class="text-center">
+        <h3>Contextual Speech Extraction: Leveraging Textual History as an Implicit Cue for Target Speech Extraction</h3>
+
+		<p class="fst-italic mb-0" style="font-size: 1.3em;">
+			<br>
+			Minsu Kim<sup>*</sup>, Rodrigo Mira<sup>*</sup>, Honglie Chen, Stavros Petridis, Maja Pantic <br>
+			<sup>*</sup>Equal contribution <br>
+			ICASSP 2025 <a href="https://arxiv.org/abs/">[Paper]</a> <a href="https://github.com/ms-dot-k/">[Code]</a>
+		</p>	
+	<p style="vertical-align: middle; text-align: center; margin-bottom: 10px;"><img src="pics/Figure.png" width="500"></p>
+	
+	<div style="display: flex; justify-content: center;">
+		<p class="mb-0" style="width: 70%; text-align: left;">
+			<b>ABSTRACT.</b> In this paper, we investigate a novel approach for Target Speech Extraction (TSE), which relies solely on textual context to extract the target speech. We refer to this task as Contextual Speech Extraction (CSE). Unlike traditional TSE methods that rely on pre-recorded enrollment utterances, video of the target speaker's face, spatial information, or other explicit cues to identify the target stream, our proposed method requires only a few turns of previous dialogue (or monologue) history. This approach is naturally feasible in mobile messaging environments where voice recordings are typically preceded by textual dialogue that can be leveraged implicitly. We present three CSE models and analyze their performances on three datasets. Through our experiments, we demonstrate that even when the model relies purely on dialogue history, it can achieve over 90% accuracy in identifying the correct target stream with only two previous dialogue turns. Furthermore, we show that by leveraging both textual context and enrollment utterances as cues during training, we further enhance our model's flexibility and effectiveness, allowing us to use either cue during inference, or combine both for improved performance.
+		</p>
+	</div>
+	</div>
+</div>
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h4 id="CSE_DailyTalk" style="text-align: center;"> &lt;CSE (Cascaded CSE, ContSep, ContExt) results on <b>DailyTalk</b>&gt; </h4>
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th style="text-align: center"> </th>
+					<th style="text-align: center">Mixed Speech (Input)</th>
+					<th style="text-align: center">Ground Truth</th>
+					<th style="text-align: center">Cascaded CSE</th>
+					<th style="text-align: center">ContSep</th>
+					<th style="text-align: center">ContExt</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk 1. Yes, that's our regular flight to Shanghai. What's your name, please? <br>
+						  Spk 2. I am Jenny Armstrong. My first initial is J.<br>
+						  Spk 1. One minute. Oh, yes, here we are. You are flying economy class, aren’t you?<br>
+						  Spk 2. Umm…. Yes, that's right.
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Mixed/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/GT/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Cascaded_CSE/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContSep/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContExt/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ...
+						  Spk1. I've made a tough decision, sir. Here's my resignation.<br>
+						  Spk2. Well, I have to tell you that I'm quite surprised. Is there any possible way to change your mind?<br>
+						  ... <br>
+						  Spk 1. No, sir.<br>
+						  Spk 2. Have you been given a better offer?<br>
+						  Spk 1. Oh, no. I would never look for another job while working here. I think this is a fantastic place to work.<br>
+						  Spk 2. Well, what's the problem then?
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Mixed/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/GT/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Cascaded_CSE/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContSep/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContExt/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. Are you crying?<br>
+						  Spk2. Yes, I always cry at weddings.<br>
+						  Spk1. Harris and Anne are perfect for each other.<br>
+						  Spk2. Yes, they are.
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Mixed/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/GT/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Cascaded_CSE/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContSep/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContExt/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. Yes, I always cry at weddings.<br>
+						  Spk2. Harris and Anne are perfect for each other.<br>
+						  Spk1. Yes, they are.<br>
+						  Spk2. You and Tom also make a great couple.
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Mixed/1060_10_1_d1060-1381_1_0_d1381-_2.7785.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/GT/1060_10_1_d1060-1381_1_0_d1381-_2.7785.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Cascaded_CSE/1060_10_1_d1060-1381_1_0_d1381-_2.7785.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContSep/1060_10_1_d1060-1381_1_0_d1381-_2.7785.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContExt/1060_10_1_d1060-1381_1_0_d1381-_2.7785.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. I think Euros will be the best, as I'll only be in Mainland Europe.<br>
+						  Spk2. Of course. Do you have your passport with you? How much would you like to purchase?<br>
+						  Spk1. Five-thousand Euros will be sufficient, thanks.<br>
+						  Spk2. Please fill in this form. How would you like it? In hundred Euro cheques?
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Mixed/1118_7_0_d1118-1405_7_1_d1405-_2.5313.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/GT/1118_7_0_d1118-1405_7_1_d1405-_2.5313.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Cascaded_CSE/1118_7_0_d1118-1405_7_1_d1405-_2.5313.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContSep/1118_7_0_d1118-1405_7_1_d1405-_2.5313.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/ContExt/1118_7_0_d1118-1405_7_1_d1405-_2.5313.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+			</tbody>
+		</table>
+	</div>
+	<br>
+</div>
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h4 id="CSE_SpokenWOZ" style="text-align: center;"> &lt;CSE (Cascaded CSE, ContSep, ContExt) results on <b>SpokenWOZ</b>&gt; </h4>
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th style="text-align: center"> </th>
+					<th style="text-align: center">Mixed Speech (Input)</th>
+					<th style="text-align: center">Ground Truth</th>
+					<th style="text-align: center">Cascaded CSE</th>
+					<th style="text-align: center">ContSep</th>
+					<th style="text-align: center">ContExt</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. and there is a restaurant called ask restaurant can meet your requirement <br>
+						  Spk2. okay, great i want to book a table<br>
+						  Spk1. of course, how many people
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Mixed/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/GT/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Cascaded_CSE/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContSep/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContExt/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ...
+						  Spk1. the train will arrive by 18:01<br>
+						  Spk2. okay. and what are the train fires<br>
+						  Spk1. the train costs 14.32 pounds for each person<br>
+						  Spk2. ah yes, thank you
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Mixed/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/GT/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Cascaded_CSE/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContSep/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContExt/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. yes, i'm also looking for a place to go in town and i really want to you know have the thing that we could all sit together on the river <br>
+						  Spk2. okay. how about. the type of boat<br>
+						  Spk1. yes, yes, great then make it in the west<br>
+						  Spk2. okay. please hold on. i'm searching for
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Mixed/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/GT/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Cascaded_CSE/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContSep/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContExt/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. oh, yeah, i got a pop that wendell park. <br>
+						  Spk2. okay, that is perfect. matthews, get the postcode. <br>
+						  Spk1. so the post code cd223ae.
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Mixed/MUL0824_14_0_MUL0824-MUL0355_12_0_MUL0355-_0.4527.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/GT/MUL0824_14_0_MUL0824-MUL0355_12_0_MUL0355-_0.4527.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Cascaded_CSE/MUL0824_14_0_MUL0824-MUL0355_12_0_MUL0355-_0.4527.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContSep/MUL0824_14_0_MUL0824-MUL0355_12_0_MUL0355-_0.4527.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContExt/MUL0824_14_0_MUL0824-MUL0355_12_0_MUL0355-_0.4527.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. okay. can i pick h. id. number. <br>
+						  Spk2. yeah.  yes, i  3, 0, 3.<br>
+						  Spk1. yes.<br>
+						  Spk2. 4, 4, 9.<br>
+						  Spk1. yes.<br>
+						  Spk2. 4 9 2 <br>
+						  Spk1. yes.
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Mixed/MUL0843_44_0_MUL0843-MUL1010_32_0_MUL1010-_3.0912.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/GT/MUL0843_44_0_MUL0843-MUL1010_32_0_MUL1010-_3.0912.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Cascaded_CSE/MUL0843_44_0_MUL0843-MUL1010_32_0_MUL1010-_3.0912.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContSep/MUL0843_44_0_MUL0843-MUL1010_32_0_MUL1010-_3.0912.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/ContExt/MUL0843_44_0_MUL0843-MUL1010_32_0_MUL1010-_3.0912.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+			</tbody>
+		</table>
+	</div>
+	<br>
+</div>
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h4 id="CSE_TED" style="text-align: center;"> &lt;CSE (Cascaded CSE, ContSep, ContExt) results on <b>TEDLIUM-3</b>&gt; </h4>
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th style="text-align: center"> </th>
+					<th style="text-align: center">Mixed Speech (Input)</th>
+					<th style="text-align: center">Ground Truth</th>
+					<th style="text-align: center">Cascaded CSE</th>
+					<th style="text-align: center">ContSep</th>
+					<th style="text-align: center">ContExt</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  when michael bloomberg asked me to be his planning commissioner and put me in charge of shaping the entire city of new york <br>
+						  he said to me on that very day he said that new york was projected to grow from eight to nine million people and he asked me<br>
+						  so where are you going to put one million additional new yorkers<br>
+						  well i didn't have any idea<br>
+						  now you know that new york does place a high value on attracting immigrants so we were excited about the prospect of growth but
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Mixed/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/GT/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Cascaded_CSE/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContSep/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContExt/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ...
+						  alone until i let them have a piece but it was not a good one <br>
+						  well it occurred to me that i should invite dr robicsek to lecture at wofford college on what else <br>
+						  i should invite him to meet my oldest trustee who had majored in french history at yale some<br>
+						  largest privately owned textile empire with an iron hand his name is roger milliken
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Mixed/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/GT/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Cascaded_CSE/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContSep/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContExt/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  i'm talking of course about living organisms <br>
+						  living organisms are created by chemistry we are huge packages of chemicals <br>
+						  so chemistry is dominated by the electromagnetic force that operates over smaller scales than gravity which explains why you and i are smaller than stars or planets <br>
+						  now what are the ideal conditions for chemistry
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Mixed/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/GT/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Cascaded_CSE/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContSep/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContExt/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  dna accumulates information through random errors some of which just happen to work <br>
+						  but dna had actually generated a faster way of learning it had produced organisms with brains and those organisms can learn<br>
+						  learn in real time they accumulate information they learn the sad thing is when they die the information dies with them<br>
+						  now what makes humans different
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Mixed/DavidChristian_2011-0079096-0079302-JonathanZittrain_2009G-0010979-0011838-0.3696.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/GT/DavidChristian_2011-0079096-0079302-JonathanZittrain_2009G-0010979-0011838-0.3696.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Cascaded_CSE/DavidChristian_2011-0079096-0079302-JonathanZittrain_2009G-0010979-0011838-0.3696.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContSep/DavidChristian_2011-0079096-0079302-JonathanZittrain_2009G-0010979-0011838-0.3696.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContExt/DavidChristian_2011-0079096-0079302-JonathanZittrain_2009G-0010979-0011838-0.3696.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  they got on a boat and yet another divergence the boat was either going to canada or to australia they got on and didn't know where they were going and ended up in <br>
+						  to make a long story short they came to canada my grandmother was a chemist she worked at the banting institute in toronto<br>
+						  and at forty four she died of stomach cancer<br>
+						  i never met my grandmother but i carry on her name
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Mixed/EvaVertes_2005-0009325-0009558-LindaHill_2014X-0026232-0026964-_2.3245.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/GT/EvaVertes_2005-0009325-0009558-LindaHill_2014X-0026232-0026964-_2.3245.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Cascaded_CSE/EvaVertes_2005-0009325-0009558-LindaHill_2014X-0026232-0026964-_2.3245.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContSep/EvaVertes_2005-0009325-0009558-LindaHill_2014X-0026232-0026964-_2.3245.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/ContExt/EvaVertes_2005-0009325-0009558-LindaHill_2014X-0026232-0026964-_2.3245.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+			</tbody>
+		</table>
+	</div>
+	<br>
+</div>
+
+<div class="container pt-5 mt-5 shadow-lg p-5 mb-5 bg-white rounded">
+	<h4 id="CSE_TED" style="text-align: center;"> &lt; <b>H-ContExt</b> results on <b>DailyTalk, SpokenWOZ, TEDLIUM-3</b>&gt; </h4>
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th style="text-align: center"> </th>
+					<th style="text-align: center">Mixed Speech (Input)</th>
+					<th style="text-align: center">Ground Truth</th>
+					<th style="text-align: center">Using only Context</th>
+					<th style="text-align: center">Using only Voice</th>
+					<th style="text-align: center">Using both Context & Voice</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="6" style="vertical-align: middle; text-align: center;"> <b>Samples from DailyTalk</b></td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk 1. Yes, that's our regular flight to Shanghai. What's your name, please? <br>
+						  Spk 2. I am Jenny Armstrong. My first initial is J.<br>
+						  Spk 1. One minute. Oh, yes, here we are. You are flying economy class, aren’t you?<br>
+						  Spk 2. Umm…. Yes, that's right.
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Mixed/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/GT/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Context/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Voice/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Joint/320_8_0_d320-2380_3_1_d2380-_4.3050.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ...
+						  Spk1. I've made a tough decision, sir. Here's my resignation.<br>
+						  Spk2. Well, I have to tell you that I'm quite surprised. Is there any possible way to change your mind?<br>
+						  ... <br>
+						  Spk 1. No, sir.<br>
+						  Spk 2. Have you been given a better offer?<br>
+						  Spk 1. Oh, no. I would never look for another job while working here. I think this is a fantastic place to work.<br>
+						  Spk 2. Well, what's the problem then?
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Mixed/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/GT/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Context/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Voice/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Joint/623_12_1_d623-2150_16_0_d2150-1.3805.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. Are you crying?<br>
+						  Spk2. Yes, I always cry at weddings.<br>
+						  Spk1. Harris and Anne are perfect for each other.<br>
+						  Spk2. Yes, they are.
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/Mixed/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/GT/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Context/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Voice/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/DailyTalk/H-ContExt_Joint/1060_9_0_d1060-1510_2_1_d1510-_2.2598.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr style="border-bottom: 1px solid #000;">
+					<td colspan="6" style="vertical-align: middle; text-align: center;"> <b> </b></td>
+				</tr>
+				<tr>
+					<td colspan="6" style="vertical-align: middle; text-align: center;"> <b>Samples from SpokenWOZ</b></td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. and there is a restaurant called ask restaurant can meet your requirement <br>
+						  Spk2. okay, great i want to book a table<br>
+						  Spk1. of course, how many people
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Mixed/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/GT/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Context/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Voice/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Joint/MUL0234_22_0_MUL0234-MUL0082_33_1_MUL0082-_3.8115.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ...
+						  Spk1. the train will arrive by 18:01<br>
+						  Spk2. okay. and what are the train fires<br>
+						  Spk1. the train costs 14.32 pounds for each person<br>
+						  Spk2. ah yes, thank you
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Mixed/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/GT/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Context/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Voice/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Joint/MUL0288_37_1_MUL0288-MUL1943_4_0_MUL1943-_4.3719.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  Spk1. yes, i'm also looking for a place to go in town and i really want to you know have the thing that we could all sit together on the river <br>
+						  Spk2. okay. how about. the type of boat<br>
+						  Spk1. yes, yes, great then make it in the west<br>
+						  Spk2. okay. please hold on. i'm searching for
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/Mixed/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/GT/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Context/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Voice/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/SpokenWOZ/H-ContExt_Joint/MUL0382_26_0_MUL0382-MUL3778_12_0_MUL3778-_3.5534.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>
+				
+				<tr style="border-bottom: 1px solid #000;">
+					<td colspan="6" style="vertical-align: middle; text-align: center;"> <b> </b></td>
+				</tr>
+				
+				<tr>
+					<td colspan="6" style="vertical-align: middle; text-align: center;"> <b>Samples from TEDLIUM-3</b></td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  when michael bloomberg asked me to be his planning commissioner and put me in charge of shaping the entire city of new york <br>
+						  he said to me on that very day he said that new york was projected to grow from eight to nine million people and he asked me<br>
+						  so where are you going to put one million additional new yorkers<br>
+						  well i didn't have any idea<br>
+						  now you know that new york does place a high value on attracting immigrants so we were excited about the prospect of growth but
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Mixed/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/GT/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Context/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Voice/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Joint/AmandaBurden_2014-0045484-0046322-MarcGoodman_2012G-0005760-0006365-_1.0836.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ...
+						  alone until i let them have a piece but it was not a good one <br>
+						  well it occurred to me that i should invite dr robicsek to lecture at wofford college on what else <br>
+						  i should invite him to meet my oldest trustee who had majored in french history at yale some<br>
+						  largest privately owned textile empire with an iron hand his name is roger milliken
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Mixed/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/GT/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Context/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Voice/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Joint/BenDunlap_2007-0096117-0097502-RichardPreston_2008-0008449-0009509-1.3952.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>	
+
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Previous <br> Textual <br> History </td>
+					<td colspan="5" style="vertical-align: middle; text-align: center;">
+						<div style="text-align: left; margin-left: 10px;">
+						  ... <br>
+						  i'm talking of course about living organisms <br>
+						  living organisms are created by chemistry we are huge packages of chemicals <br>
+						  so chemistry is dominated by the electromagnetic force that operates over smaller scales than gravity which explains why you and i are smaller than stars or planets <br>
+						  now what are the ideal conditions for chemistry
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; text-align: center"> Audio </td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/Mixed/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/GT/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Context/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Voice/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+					<td style="vertical-align: middle; text-align: center"> <audio controls="controls" style="width: 200px;"><source src="audios/TEDLIUM/H-ContExt_Joint/DavidChristian_2011-0052713-0052930-JannaLevin_2011-0042540-0043860-4.6080.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+				</tr>
+
+			</tbody>
+		</table>
+	</div>
+	<br>
+</div>
+
+	
+</article>
+</main>
+</div>
+
+</body>
+</html>

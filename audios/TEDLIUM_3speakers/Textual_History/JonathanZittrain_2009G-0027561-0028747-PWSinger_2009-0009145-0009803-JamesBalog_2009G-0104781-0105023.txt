@@ -1,0 +1,34 @@
+[unk] my name is jonathan zittrain [unk] and in my recent work i've been a bit of a pessimist so i thought this morning i would try to be the optimist and give reason to hope for the future of the internet by drawing upon its present
+now it may seem like there
+[unk] is less hope today than there was before people are less kind there is less trust around i don't know as a
+simple example we could run a test here how many people have ever hitchhiked [unk]
+i know [unk] how many people have hitchhiked within the past ten years
+[unk] right [unk] so what has changed it's not better public transportation [unk]
+so that's one reason to think that we might be declensionists going in the wrong direction
+but i want to give you three examples to try to say that the trend line is in fact in the other direction [unk] and it's the internet helping it along [unk]
+so example number one the internet
+[unk] itself these are three of the founders of the internet [unk] they were actually high school classmates together at the same high school in suburban los angles in the [unk]
+you might have had a french club or a debate club they had a let's build a global network club and it worked out very well [unk] they are pictured
+[unk] anniversary newsweek retrospective on the internet and as you can tell they are basically goof balls [unk]
+they had one great limitation and one great freedom as they tried to conceive of a global network
+the limitation was that they didn't have any money no particular amount of capital to invest
+[unk] of the sort that for a physical network you might need for trucks and people and a hub to move packages around overnight they had none of that
+but they had an amazing freedom which was they didn't have to make any money from it
+the internet has no business plan never did no ceo
+no firm responsible singly for building it [unk]
+[unk] it's folks getting together to do something for fun rather than because they were told to or because they were expecting to make a mint off of it
+that ethos led to a network architecture a structure that was unlike other digital networks then or since so unusual in fact that it was said that it's not clear the internet could
+[unk] was known to say you couldn't possibly build a corporate network using internet protocol
+and even some internet engineers today say the whole thing is a pilot project and the jury is still out
+that's why the mascot of internet engineering if it had one is said to be the bumblebee because the
+[unk] ratio of the bumblebee is far too large for it to be able to fly [unk] and yet [unk] mysteriously [unk] somehow the bee flies [unk]
+i'm pleased to say that thanks to massive government funding about three years ago we finally figured out how bees fly it
+very complicated but it turns out they flap their wings very quickly
+so what is this bizarre
+[unk] architecture configuration that makes the network sing and be so unusual [unk] well to move data around from one place to another again it's not like a package courier [unk] it's more like a mosh pit
+imagine you being part of a network where you're maybe at a sporting event and you're sitting in rows like this and somebody asks for a beer [unk]
+and it gets handed at the aisle and
+[unk] your neighborly duty is to pass the beer along at risk to your own trousers
+to get it to the destination [unk]
+no one pays you to do this it's just part of your neighborly duty
+and in a way that's exactly how packets move around the internet sometimes in as many as twenty five or thirty
